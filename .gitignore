@@ -1,0 +1,4 @@
+.DS_Store
+public/.DS_Store
+go.mod
+go.sum

@@ -1,0 +1,14 @@
+services:
+  db:
+    image: mysql
+    container_name: mysql-for-clean-architecture
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: akihiro
+      MYSQL_USER: akihiro
+      MYSQL_PASSWORD: akihiro
+      MYSQL_PORT: 3306
+      TZ: 'Asia/Tokyo'
+    ports:
+    - 3306:3306

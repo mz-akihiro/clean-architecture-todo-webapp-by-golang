@@ -7,7 +7,7 @@ import (
 
 type ITaskRepository interface {
 	CreateTask(task model.Task) (int64, error)
-	ReloadTask(userId int) (*sql.Rows, error)
+	ReloadTask(userId int, taskData *[]model.ReloadTask) error
 	DeleteTask(deleteTask model.DeleteTask) error
 }
 
@@ -28,11 +28,19 @@ func (tr *taskRepository) CreateTask(task model.Task) (int64, error) {
 	}
 }
 
-func (tr *taskRepository) ReloadTask(userId int) (*sql.Rows, error) {
+func (tr *taskRepository) ReloadTask(userId int, taskData *[]model.ReloadTask) error {
 	if rows, err := tr.db.Query("SELECT id,memo FROM task_data WHERE userId = ?", userId); err != nil {
-		return rows, err
+		return err
 	} else {
-		return rows, nil
+		defer rows.Close()
+		for rows.Next() {
+			var td model.ReloadTask
+			if err := rows.Scan(&td.TaskId, &td.Task); err != nil {
+				return err
+			}
+			*taskData = append(*taskData, td)
+		}
+		return nil
 	}
 }
 

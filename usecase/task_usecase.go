@@ -34,17 +34,9 @@ func (tu *taskUsecase) CreateTask(task model.Task) (int, int64, error) {
 
 func (tu *taskUsecase) ReloadTask(userId int) (int, []model.ReloadTask, error) {
 	var taskData []model.ReloadTask
-	if rows, err := tu.tr.ReloadTask(userId); err != nil {
+	if err := tu.tr.ReloadTask(userId, &taskData); err != nil { // ここにdb関連の技術は持ち込んではいけない(rows)
 		return http.StatusInternalServerError, taskData, err
 	} else {
-		defer rows.Close()
-		for rows.Next() {
-			var td model.ReloadTask
-			if err := rows.Scan(&td.TaskId, &td.Task); err != nil {
-				return http.StatusInternalServerError, taskData, err
-			}
-			taskData = append(taskData, td)
-		}
 		return http.StatusOK, taskData, nil
 	}
 }

@@ -7,7 +7,7 @@ function addPost(){
 
     $.ajax({
         type : 'post',
-        url : "http://localhost:8080/create-task",
+        url : "http://localhost:8080/create-todo",
         data : JSON.stringify(jsonData),
         contentType: 'application/JSON',
         scriptCharset: 'utf-8'
@@ -36,7 +36,7 @@ function addPost(){
                     var taskThis = this.parentNode; // thisの値を保存（ajax内だと指す値が変わるため）
                     $.ajax({
                         type : 'delete',
-                        url : "http://localhost:8080/delete-task",
+                        url : "http://localhost:8080/delete-todo",
                         data : JSON.stringify(deleteTask),
                         contentType: 'application/JSON',
                         scriptCharset: 'utf-8'
@@ -67,7 +67,6 @@ function addPost(){
                     this.classList.toggle('completed');
                 }
             }
-            
             document.querySelector("#newtask input").value = "";
         },
         function(jqXHR, textStatus, errorThrown){

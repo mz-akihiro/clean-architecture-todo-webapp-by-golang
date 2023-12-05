@@ -6,9 +6,9 @@ import (
 )
 
 type ITaskRepository interface {
-	CreateTask(task model.Task) (int64, error)
-	ReloadTask(userId int, taskData *[]model.ReloadTask) error
-	DeleteTask(deleteTask model.DeleteTask) error
+	CreateTodo(todo model.Todo) (int64, error)
+	ReadTodo(userId int, todoData *[]model.ReadTodo) error
+	DeleteTodo(deleteTodo model.DeleteTodo) error
 }
 
 type taskRepository struct {
@@ -19,8 +19,8 @@ func NewTaskRepository(db *sql.DB) ITaskRepository {
 	return &taskRepository{db}
 }
 
-func (tr *taskRepository) CreateTask(task model.Task) (int64, error) {
-	if result, err := tr.db.Exec("INSERT INTO todos (userId, todo) VALUES (?, ?)", task.UserId, task.Task); err != nil {
+func (tr *taskRepository) CreateTodo(todo model.Todo) (int64, error) {
+	if result, err := tr.db.Exec("INSERT INTO todos (userId, todo) VALUES (?, ?)", todo.UserId, todo.Todo); err != nil {
 		return 0, err
 	} else {
 		taskId, _ := result.LastInsertId()
@@ -28,24 +28,24 @@ func (tr *taskRepository) CreateTask(task model.Task) (int64, error) {
 	}
 }
 
-func (tr *taskRepository) ReloadTask(userId int, taskData *[]model.ReloadTask) error {
+func (tr *taskRepository) ReadTodo(userId int, todoData *[]model.ReadTodo) error {
 	if rows, err := tr.db.Query("SELECT id, todo FROM todos WHERE userId = ? AND deleted = false", userId); err != nil {
 		return err
 	} else {
 		defer rows.Close()
 		for rows.Next() {
-			var td model.ReloadTask
-			if err := rows.Scan(&td.TaskId, &td.Task); err != nil {
+			var td model.ReadTodo
+			if err := rows.Scan(&td.TaskId, &td.Todo); err != nil {
 				return err
 			}
-			*taskData = append(*taskData, td)
+			*todoData = append(*todoData, td)
 		}
 		return nil
 	}
 }
 
-func (tr *taskRepository) DeleteTask(deleteTask model.DeleteTask) error {
-	if _, err := tr.db.Exec("UPDATE todos set deleted = true where id = ? and userId = ?;", deleteTask.DeleteId, deleteTask.UserId); err != nil {
+func (tr *taskRepository) DeleteTodo(deleteTodo model.DeleteTodo) error {
+	if _, err := tr.db.Exec("UPDATE todos set deleted = true where id = ? and userId = ?;", deleteTodo.DeleteId, deleteTodo.UserId); err != nil {
 		return err
 	}
 	return nil

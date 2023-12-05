@@ -9,9 +9,9 @@ import (
 )
 
 type ITaskController interface {
-	CreateTask(w http.ResponseWriter, r *http.Request)
-	ReloadTask(w http.ResponseWriter, r *http.Request)
-	DeleteTask(w http.ResponseWriter, r *http.Request)
+	CreateTodo(w http.ResponseWriter, r *http.Request)
+	ReadTodo(w http.ResponseWriter, r *http.Request)
+	DeleteTodo(w http.ResponseWriter, r *http.Request)
 }
 
 type taskController struct {
@@ -22,8 +22,8 @@ func NewTaskController(tu usecase.ITaskUsecase) ITaskController {
 	return &taskController{tu}
 }
 
-func (tc *taskController) CreateTask(w http.ResponseWriter, r *http.Request) {
-	task := model.Task{}
+func (tc *taskController) CreateTodo(w http.ResponseWriter, r *http.Request) {
+	todo := model.Todo{}
 	//userId, ok := r.Context().Value("testId").(int)
 	userId, ok := r.Context().Value(model.ContextKey{UserId: "user_id"}).(int)
 	if !ok {
@@ -31,20 +31,20 @@ func (tc *taskController) CreateTask(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Context value is incorrect")
 		return
 	}
-	task.UserId = userId
+	todo.UserId = userId
 	// ここでtaskがからでも検知できていない
-	if err := json.NewDecoder(r.Body).Decode(&task); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&todo); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintln(w, "Invalid JSON format")
 		return
 	}
 
-	if statusCode, taskId, err := tc.tu.CreateTask(task); err != nil {
+	if statusCode, taskId, err := tc.tu.CreateTodo(todo); err != nil {
 		w.WriteHeader(statusCode)
 		fmt.Fprintln(w, err)
 		return
 	} else {
-		jsonData := model.TaskIdReturn{}
+		jsonData := model.TodoIdReturn{}
 		jsonData.Id = taskId
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		if err := json.NewEncoder(w).Encode(jsonData); err != nil {
@@ -55,7 +55,7 @@ func (tc *taskController) CreateTask(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (tc *taskController) ReloadTask(w http.ResponseWriter, r *http.Request) {
+func (tc *taskController) ReadTodo(w http.ResponseWriter, r *http.Request) {
 	//userId, ok := r.Context().Value("testId").(int)
 	userId, ok := r.Context().Value(model.ContextKey{UserId: "user_id"}).(int)
 	if !ok {
@@ -63,7 +63,7 @@ func (tc *taskController) ReloadTask(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Context value is incorrect")
 		return
 	}
-	if _, taskData, err := tc.tu.ReloadTask(userId); err != nil {
+	if _, taskData, err := tc.tu.ReadTodo(userId); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintln(w, "Context value is incorrect")
 		return
@@ -77,8 +77,8 @@ func (tc *taskController) ReloadTask(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (tc *taskController) DeleteTask(w http.ResponseWriter, r *http.Request) {
-	var deleteTask model.DeleteTask
+func (tc *taskController) DeleteTodo(w http.ResponseWriter, r *http.Request) {
+	var deleteTask model.DeleteTodo
 	userId, ok := r.Context().Value(model.ContextKey{UserId: "user_id"}).(int)
 	if !ok {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -91,7 +91,7 @@ func (tc *taskController) DeleteTask(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Invalid JSON format")
 		return
 	}
-	if statusCode, err := tc.tu.DeleteTask(deleteTask); err != nil {
+	if statusCode, err := tc.tu.DeleteTodo(deleteTask); err != nil {
 		w.WriteHeader(statusCode)
 		fmt.Fprintln(w, err)
 		return

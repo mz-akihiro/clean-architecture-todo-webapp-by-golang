@@ -3,7 +3,7 @@ function reloadcheckPost(){
     console.log("reload")
     $.ajax({
         type : "post",
-        url : "http://localhost:8080/reload-task",
+        url : "http://localhost:8080/read-todo",
     })
     .then(
         function(data){
@@ -16,7 +16,6 @@ function reloadcheckPost(){
                     reloadTasks(task.TaskId, task.Task)
                 }
             }
-            
         },
         function(jqXHR, textStatus, errorThrown){
             console.log(jqXHR.status)
@@ -54,7 +53,7 @@ function reloadTasks(taskId, Task){
             var taskThis = this.parentNode; // thisの値を保存（ajax内だと指す値が変わるため）
             $.ajax({
                 type : 'delete',
-                url : "http://localhost:8080/delete-task",
+                url : "http://localhost:8080/delete-todo",
                 data : JSON.stringify(deleteTask),
                 contentType: 'application/JSON',
                 scriptCharset: 'utf-8'

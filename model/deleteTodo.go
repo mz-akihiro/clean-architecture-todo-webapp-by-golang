@@ -1,6 +1,6 @@
 package model
 
-type DeleteTask struct {
+type DeleteTodo struct {
 	UserId   int
 	DeleteId int `json:"TaskId"`
 }

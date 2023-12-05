@@ -91,7 +91,6 @@ func (tc *taskController) DeleteTask(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Invalid JSON format")
 		return
 	}
-	fmt.Println(deleteTask)
 	if statusCode, err := tc.tu.DeleteTask(deleteTask); err != nil {
 		w.WriteHeader(statusCode)
 		fmt.Fprintln(w, err)

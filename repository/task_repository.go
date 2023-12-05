@@ -20,7 +20,7 @@ func NewTaskRepository(db *sql.DB) ITaskRepository {
 }
 
 func (tr *taskRepository) CreateTask(task model.Task) (int64, error) {
-	if result, err := tr.db.Exec("INSERT INTO task_data (userId, memo) VALUES (?, ?)", task.UserId, task.Task); err != nil {
+	if result, err := tr.db.Exec("INSERT INTO todos (userId, todo) VALUES (?, ?)", task.UserId, task.Task); err != nil {
 		return 0, err
 	} else {
 		taskId, _ := result.LastInsertId()
@@ -29,7 +29,7 @@ func (tr *taskRepository) CreateTask(task model.Task) (int64, error) {
 }
 
 func (tr *taskRepository) ReloadTask(userId int, taskData *[]model.ReloadTask) error {
-	if rows, err := tr.db.Query("SELECT id,memo FROM task_data WHERE userId = ?", userId); err != nil {
+	if rows, err := tr.db.Query("SELECT id, todo FROM todos WHERE userId = ? AND deleted = false", userId); err != nil {
 		return err
 	} else {
 		defer rows.Close()
@@ -45,7 +45,7 @@ func (tr *taskRepository) ReloadTask(userId int, taskData *[]model.ReloadTask) e
 }
 
 func (tr *taskRepository) DeleteTask(deleteTask model.DeleteTask) error {
-	if _, err := tr.db.Exec("DELETE FROM task_data WHERE id = ? AND userId = ?", deleteTask.DeleteId, deleteTask.UserId); err != nil {
+	if _, err := tr.db.Exec("UPDATE todos set deleted = true where id = ? and userId = ?;", deleteTask.DeleteId, deleteTask.UserId); err != nil {
 		return err
 	}
 	return nil

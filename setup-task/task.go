@@ -11,10 +11,11 @@ func main() {
 
 	defer db.CloseDB(dbCnt)
 
-	_, err := dbCnt.Exec(`CREATE TABLE IF NOT EXISTS task_data (
+	_, err := dbCnt.Exec(`CREATE TABLE IF NOT EXISTS todos (
 						id INT AUTO_INCREMENT PRIMARY KEY,
 						userId INT NOT NULL,
-						memo VARCHAR(255) NOT NULL,
+						todo VARCHAR(255) NOT NULL,
+						deleted BOOLEAN DEFAULT FALSE NOT NULL,
 						created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 						updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 					)`)

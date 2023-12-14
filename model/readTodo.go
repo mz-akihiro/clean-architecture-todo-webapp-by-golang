@@ -1,6 +1,6 @@
 package model
 
 type ReadTodo struct {
-	TaskId int
+	TodoId int
 	Todo   string
 }

@@ -63,13 +63,13 @@ func (tc *taskController) ReadTodo(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Context value is incorrect")
 		return
 	}
-	if _, taskData, err := tc.tu.ReadTodo(userId); err != nil {
+	if _, todoData, err := tc.tu.ReadTodo(userId); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintln(w, "Context value is incorrect")
 		return
 	} else {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		if err := json.NewEncoder(w).Encode(taskData); err != nil {
+		if err := json.NewEncoder(w).Encode(todoData); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintln(w, "Faild json encode")
 			return

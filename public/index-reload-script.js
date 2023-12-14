@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", reloadcheckPost); 
+document.addEventListener("DOMContentLoaded", reloadcheckPost);
 function reloadcheckPost(){
     console.log("reload")
     $.ajax({
@@ -12,8 +12,8 @@ function reloadcheckPost(){
             if (data != null){
                 for (let i = 0; i < data.length; i++) {
                     let task = data[i];
-                    console.log(i, " : ", task.TaskId + ": " + task.Task);
-                    reloadTasks(task.TaskId, task.Task)
+                    console.log(i, " : ", task.TodoId + ": " + task.Todo);
+                    reloadTodos(task.TodoId, task.Todo)
                 }
             }
         },
@@ -31,16 +31,34 @@ function reloadcheckPost(){
     );
 }
 
-function reloadTasks(taskId, Task){
-    document.querySelector('#tasks').innerHTML += `
-            <div class="task">
-                <span id="taskname">
-                    ${Task}
+function reloadTodos(todoId, todo){
+    let dialogId = `ex-dialog-${todoId}`;
+    document.querySelector('#todos').innerHTML += `
+            <div class="todo">
+                <span id="todoname">
+                    ${todo}
                 </span>
-                <span id="taskId">${taskId}</span>
-                <button class="delete">
-                    <i class="far fa-trash-alt"></i>
-                </button>
+                <span id="todoId">${todoId}</span>
+                <div class="todoButton">
+                    <button type="button" onclick="document.getElementById('${dialogId}').showModal()">更新</button>
+                    <dialog id="${dialogId}" aria-labelledby="${dialogId}-title"> <!--dialog要素は名前を変えないと同じものを使い回す-->
+                        <form method="dialog">
+                            <h3>todoを更新</h3>
+                            <div id=${dialogId}> <!--inputの値を取得するためにdiv要素を配置-->
+                                <p><label>更新名: <input type="text" placeholder=${todo}></label></p>
+                            </div>
+                            <div class="dialogButton">
+                                <span id="dialogId">${dialogId}</span>
+                                <span id="updateTodoId">${todoId}</span>
+                                <button type="button" onclick="this.closest('dialog').close();">キャンセル</button>
+                                <button class="todoChange" type="submit">更新</button>
+                            </div>
+                        </form>
+                    </dialog>
+                    <button class="delete">
+                        <i class="far fa-trash-alt"></i>
+                    </button>
+                </div>
             </div>
         `;
 
@@ -48,7 +66,7 @@ function reloadTasks(taskId, Task){
     for(var i=0; i<current_tasks.length; i++){
         current_tasks[i].onclick = function(){
             var deleteTask = {
-                TaskId: parseInt(this.parentNode.querySelector("#taskId").textContent)
+                TaskId: parseInt(this.parentNode.querySelector("#todoId").textContent)
             };
             var taskThis = this.parentNode; // thisの値を保存（ajax内だと指す値が変わるため）
             $.ajax({
@@ -78,10 +96,20 @@ function reloadTasks(taskId, Task){
         }
     }
 
-    var tasks = document.querySelectorAll(".task");
+    var current_tasks = document.querySelectorAll(".todoChange");
+    for(var i=0; i<current_tasks.length; i++){
+        current_tasks[i].onclick = function(){
+            console.log("更新dialog番号 : " + this.parentNode.querySelector("#dialogId").textContent)
+            console.log("更新内容" + document.querySelector('#'+this.parentNode.querySelector("#dialogId").textContent+' input').value)
+            console.log("todoId : " + this.parentNode.querySelector("#updateTodoId").textContent)
+        }
+    }
+
+    // 押された際に文字状に横線を引く
+    /* var tasks = document.querySelectorAll(".todo");
     for(var i=0; i<tasks.length; i++){
         tasks[i].onclick = function(){
             this.classList.toggle('completed');
         }
-    }
+    } */
 }

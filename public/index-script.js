@@ -1,7 +1,7 @@
 function addPost(){
 
     var jsonData = {
-        Task: document.querySelector('#newtask input').value
+        Task: document.querySelector('#newtodo input').value
     };
     console.log("post json data",jsonData)
 
@@ -15,12 +15,12 @@ function addPost(){
     .then(
         function(data, textStatus, jqXHR){
             console.log(jqXHR.status)
-            document.querySelector('#tasks').innerHTML += `
-                <div class="task">
-                    <span id="taskname">
-                        ${document.querySelector('#newtask input').value}
+            document.querySelector('#todos').innerHTML += `
+                <div class="todo">
+                    <span id="todoname">
+                        ${document.querySelector('#newtodo input').value}
                     </span>
-                    <span id="taskId">${data.taskId}</span>
+                    <span id="todoId">${data.todoId}</span>
                     <button class="delete">
                         <i class="far fa-trash-alt"></i>
                     </button>
@@ -31,7 +31,7 @@ function addPost(){
             for(var i=0; i<current_tasks.length; i++){
                 current_tasks[i].onclick = function(){
                     var deleteTask = {
-                        TaskId: parseInt(this.parentNode.querySelector("#taskId").textContent)
+                        TaskId: parseInt(this.parentNode.querySelector("#todoId").textContent)
                     };
                     var taskThis = this.parentNode; // thisの値を保存（ajax内だと指す値が変わるため）
                     $.ajax({
@@ -61,13 +61,14 @@ function addPost(){
                 }
             }
 
-            var tasks = document.querySelectorAll(".task");
+            // 押された際に文字状に横線を引く
+            /* var tasks = document.querySelectorAll(".todo");
             for(var i=0; i<tasks.length; i++){
                 tasks[i].onclick = function(){
                     this.classList.toggle('completed');
                 }
-            }
-            document.querySelector("#newtask input").value = "";
+            } */
+            document.querySelector("#newtodo input").value = "";
         },
         function(jqXHR, textStatus, errorThrown){
             console.log("status NO");
@@ -87,8 +88,8 @@ function addPost(){
 ////////////////////////////////////
 document.querySelector('#push').onclick = function(){
     //alert("add Task")
-    if(document.querySelector('#newtask input').value.length == 0){
-        alert("Please Enter a Task")
+    if(document.querySelector('#newtodo input').value.length == 0){
+        alert("Please Enter a Todo")
     }
     else{
         addPost()

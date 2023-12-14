@@ -35,7 +35,7 @@ func (tr *taskRepository) ReadTodo(userId int, todoData *[]model.ReadTodo) error
 		defer rows.Close()
 		for rows.Next() {
 			var td model.ReadTodo
-			if err := rows.Scan(&td.TaskId, &td.Todo); err != nil {
+			if err := rows.Scan(&td.TodoId, &td.Todo); err != nil {
 				return err
 			}
 			*todoData = append(*todoData, td)

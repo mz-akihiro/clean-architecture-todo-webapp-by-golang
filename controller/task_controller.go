@@ -45,7 +45,7 @@ func (tc *taskController) CreateTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	} else {
 		jsonData := model.TodoIdReturn{}
-		jsonData.Id = taskId
+		jsonData.TodoId = taskId
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		if err := json.NewEncoder(w).Encode(jsonData); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)

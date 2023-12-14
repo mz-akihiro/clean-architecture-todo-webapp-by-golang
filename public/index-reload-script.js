@@ -38,7 +38,6 @@ function reloadTodos(todoId, todo){
                 <span id="todoname">
                     ${todo}
                 </span>
-                <span id="todoId">${todoId}</span>
                 <div class="todoButton">
                     <button type="button" onclick="document.getElementById('${dialogId}').showModal()">更新</button>
                     <dialog id="${dialogId}" aria-labelledby="${dialogId}-title"> <!--dialog要素は名前を変えないと同じものを使い回す-->
@@ -49,13 +48,13 @@ function reloadTodos(todoId, todo){
                             </div>
                             <div class="dialogButton">
                                 <span id="dialogId">${dialogId}</span>
-                                <span id="updateTodoId">${todoId}</span>
                                 <button type="button" onclick="this.closest('dialog').close();">キャンセル</button>
                                 <button class="todoChange" type="submit">更新</button>
                             </div>
                         </form>
                     </dialog>
                     <button class="delete">
+                        <span id="todoId">${todoId}</span>
                         <i class="far fa-trash-alt"></i>
                     </button>
                 </div>
@@ -68,9 +67,9 @@ function reloadTodos(todoId, todo){
             var deleteTask = {
                 TaskId: parseInt(this.parentNode.querySelector("#todoId").textContent)
             };
-            var taskThis = this.parentNode; // thisの値を保存（ajax内だと指す値が変わるため）
-            $.ajax({
-                type : 'delete',
+            var taskThis = this.closest(".todo");   // thisの値を保存（ajax内だと指す値が変わるため）
+            $.ajax({                                // なおdialog追加によりthisの指し示す値が<div class="todoButton">になったため
+                type : 'delete',                    // [this.closet]を使用して<div class="todo">を指定できるように変更(this.closetは親要素を探索する)
                 url : "http://localhost:8080/delete-todo",
                 data : JSON.stringify(deleteTask),
                 contentType: 'application/JSON',

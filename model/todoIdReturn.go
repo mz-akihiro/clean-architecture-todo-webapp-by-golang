@@ -1,5 +1,5 @@
 package model
 
 type TodoIdReturn struct {
-	Id int64 `json:"taskId"`
+	TodoId int64 `json:"todoId"`
 }

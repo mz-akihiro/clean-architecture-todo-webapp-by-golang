@@ -15,17 +15,34 @@ function addPost(){
     .then(
         function(data, textStatus, jqXHR){
             console.log(jqXHR.status)
+            let dialogId = `ex-dialog-${data.todoId}`;
             document.querySelector('#todos').innerHTML += `
-                <div class="todo">
-                    <span id="todoname">
-                        ${document.querySelector('#newtodo input').value}
-                    </span>
-                    <span id="todoId">${data.todoId}</span>
-                    <button class="delete">
-                        <i class="far fa-trash-alt"></i>
-                    </button>
-                </div>
-            `;
+                    <div class="todo">
+                        <span id="todoname">
+                            ${document.querySelector('#newtodo input').value}
+                        </span>
+                        <div class="todoButton">
+                            <button type="button" onclick="document.getElementById('${dialogId}').showModal()">更新</button>
+                            <dialog id="${dialogId}" aria-labelledby="${dialogId}-title"> <!--dialog要素は名前を変えないと同じものを使い回す-->
+                                <form method="dialog">
+                                    <h3>todoを更新</h3>
+                                    <div id=${dialogId}> <!--inputの値を取得するためにdiv要素を配置-->
+                                        <p><label>更新名: <input type="text" placeholder=${document.querySelector('#newtodo input').value}></label></p>
+                                    </div>
+                                    <div class="dialogButton">
+                                        <span id="dialogId">${dialogId}</span>
+                                        <button type="button" onclick="this.closest('dialog').close();">キャンセル</button>
+                                        <button class="todoChange" type="submit">更新</button>
+                                    </div>
+                                </form>
+                            </dialog>
+                            <button class="delete">
+                                <span id="todoId">${data.todoId}</span>
+                                <i class="far fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
 
             var current_tasks = document.querySelectorAll(".delete");   // 新旧問わず全ての削除ボタンにイベントリスナーを付与してるので非効率（改善項目）
             for(var i=0; i<current_tasks.length; i++){
@@ -33,9 +50,9 @@ function addPost(){
                     var deleteTask = {
                         TaskId: parseInt(this.parentNode.querySelector("#todoId").textContent)
                     };
-                    var taskThis = this.parentNode; // thisの値を保存（ajax内だと指す値が変わるため）
-                    $.ajax({
-                        type : 'delete',
+                    var taskThis = this.closest(".todo");   // thisの値を保存（ajax内だと指す値が変わるため）
+                    $.ajax({                                // なおdialog追加によりthisの指し示す値が<div class="todoButton">になったため
+                        type : 'delete',                    // [this.closet]を使用して<div class="todo">を指定できるように変更(this.closetは親要素を探索する)
                         url : "http://localhost:8080/delete-todo",
                         data : JSON.stringify(deleteTask),
                         contentType: 'application/JSON',
@@ -58,6 +75,15 @@ function addPost(){
                             }
                         }
                     )
+                }
+            }
+
+            var current_tasks = document.querySelectorAll(".todoChange");
+            for(var i=0; i<current_tasks.length; i++){
+                current_tasks[i].onclick = function(){
+                    console.log("更新dialog番号 : " + this.parentNode.querySelector("#dialogId").textContent)
+                    console.log("更新内容" + document.querySelector('#'+this.parentNode.querySelector("#dialogId").textContent+' input').value)
+                    console.log("todoId : " + this.parentNode.querySelector("#updateTodoId").textContent)
                 }
             }
 

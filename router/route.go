@@ -11,8 +11,9 @@ func NewRouter(uc controller.IUserController, tc controller.ITaskController, mc 
 	s.HandleFunc("/login-api", uc.LogIn)
 	s.HandleFunc("/logout-api", uc.LogOut)
 	s.HandleFunc("/signup-api", uc.SignUp)
-	s.Handle("/create-task", mc.AuthMiddleware(tc.CreateTask))
-	s.Handle("/reload-task", mc.AuthMiddleware(tc.ReloadTask))
-	s.Handle("/delete-task", mc.AuthMiddleware(tc.DeleteTask))
+	s.Handle("/create-todo", mc.AuthMiddleware(tc.CreateTodo))
+	s.Handle("/read-todo", mc.AuthMiddleware(tc.ReadTodo))
+	s.Handle("/update-todo", mc.AuthMiddleware(tc.UpdateTodo))
+	s.Handle("/delete-todo", mc.AuthMiddleware(tc.DeleteTodo))
 	return s
 }

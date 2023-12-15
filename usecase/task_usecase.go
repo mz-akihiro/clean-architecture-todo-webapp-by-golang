@@ -10,6 +10,7 @@ import (
 type ITaskUsecase interface {
 	CreateTodo(todo model.Todo) (int, int64, error)
 	ReadTodo(userId int) (int, []model.ReadTodo, error)
+	UpdateTodo(updateTodo model.UpdateTodo) (int, error)
 	DeleteTodo(deleteTask model.DeleteTodo) (int, error)
 }
 
@@ -38,6 +39,17 @@ func (tu *taskUsecase) ReadTodo(userId int) (int, []model.ReadTodo, error) {
 		return http.StatusInternalServerError, taskData, err
 	} else {
 		return http.StatusOK, taskData, nil
+	}
+}
+
+func (tu *taskUsecase) UpdateTodo(updateTodo model.UpdateTodo) (int, error) {
+	if updateTodo.UserId == 0 || updateTodo.TodoId == 0 || updateTodo.Todo == "" {
+		return http.StatusBadRequest, errors.New("invalid JSON format")
+	}
+	if err := tu.tr.UpdateTodo(updateTodo); err != nil {
+		return http.StatusInternalServerError, err
+	} else {
+		return http.StatusOK, nil
 	}
 }
 

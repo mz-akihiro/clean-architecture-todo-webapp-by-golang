@@ -8,6 +8,7 @@ import (
 type ITaskRepository interface {
 	CreateTodo(todo model.Todo) (int64, error)
 	ReadTodo(userId int, todoData *[]model.ReadTodo) error
+	UpdateTodo(updateTodo model.UpdateTodo) error
 	DeleteTodo(deleteTodo model.DeleteTodo) error
 }
 
@@ -42,6 +43,13 @@ func (tr *taskRepository) ReadTodo(userId int, todoData *[]model.ReadTodo) error
 		}
 		return nil
 	}
+}
+
+func (tr *taskRepository) UpdateTodo(updateTodo model.UpdateTodo) error {
+	if _, err := tr.db.Query("UPDATE todos set todo = ? where id = ? and userId = ?;", updateTodo.Todo, updateTodo.TodoId, updateTodo.UserId); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (tr *taskRepository) DeleteTodo(deleteTodo model.DeleteTodo) error {

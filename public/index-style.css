@@ -112,6 +112,10 @@ body{
     display: none;
 }
 
+#updateTodoId {
+    display: none;
+}
+
 .header {
     display: flex;
     justify-content: space-between;

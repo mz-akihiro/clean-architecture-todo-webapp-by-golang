@@ -27,10 +27,11 @@ function addPost(){
                                 <form method="dialog">
                                     <h3>todoを更新</h3>
                                     <div id=${dialogId}> <!--inputの値を取得するためにdiv要素を配置-->
-                                        <p><label>更新名: <input type="text" placeholder=${document.querySelector('#newtodo input').value}></label></p>
+                                        <p><label>更新名: <input type="text" placeholder="${document.querySelector('#newtodo input').value}"></label></p>
                                     </div>
                                     <div class="dialogButton">
                                         <span id="dialogId">${dialogId}</span>
+                                        <span id="updateTodoId">${data.todoId}</span>
                                         <button type="button" onclick="this.closest('dialog').close();">キャンセル</button>
                                         <button class="todoChange" type="submit">更新</button>
                                     </div>
@@ -82,8 +83,36 @@ function addPost(){
             for(var i=0; i<current_tasks.length; i++){
                 current_tasks[i].onclick = function(){
                     console.log("更新dialog番号 : " + this.parentNode.querySelector("#dialogId").textContent)
-                    console.log("更新内容" + document.querySelector('#'+this.parentNode.querySelector("#dialogId").textContent+' input').value)
+                    console.log("更新内容 : " + document.querySelector('#'+this.parentNode.querySelector("#dialogId").textContent+' input').value)
                     console.log("todoId : " + this.parentNode.querySelector("#updateTodoId").textContent)
+                    var UpdateTodo = {
+                        TodoId: parseInt(this.parentNode.querySelector("#updateTodoId").textContent),
+                        Todo: document.querySelector('#'+this.parentNode.querySelector("#dialogId").textContent+' input').value
+                    };
+                    $.ajax({
+                        type : 'put',
+                        url : "http://localhost:8080/update-todo",
+                        data : JSON.stringify(UpdateTodo),
+                        contentType: 'application/JSON',
+                        scriptCharset: 'utf-8'
+                    })
+                    .then(
+                        function(data, textStatus, jqXHR){
+                            console.log(jqXHR.status)
+                            window.location.href="http://localhost:8080/index.html";
+                        },
+                        function(jqXHR, textStatus, errorThrown){
+                            console.log(jqXHR.status)
+                            if (jqXHR.status >= 500) {
+                                alert("server error")
+                            }else if (jqXHR.status === 401){
+                                alert("Token error, return to login page")
+                                window.location.href="http://localhost:8080/login.html"
+                            }else if (jqXHR.status >= 400) {
+                                alert("request error")
+                            }
+                        }
+                    );
                 }
             }
 

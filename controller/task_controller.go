@@ -11,6 +11,7 @@ import (
 type ITaskController interface {
 	CreateTodo(w http.ResponseWriter, r *http.Request)
 	ReadTodo(w http.ResponseWriter, r *http.Request)
+	UpdateTodo(w http.ResponseWriter, r *http.Request)
 	DeleteTodo(w http.ResponseWriter, r *http.Request)
 }
 
@@ -74,6 +75,36 @@ func (tc *taskController) ReadTodo(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintln(w, "Faild json encode")
 			return
 		}
+	}
+}
+
+func (tc *taskController) UpdateTodo(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != "PUT" {
+		fmt.Println("taskadd - Method not allowed")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		fmt.Fprintln(w, "Method not Allowed")
+		return
+	}
+
+	var updateTodo model.UpdateTodo
+	userId, ok := r.Context().Value(model.ContextKey{UserId: "user_id"}).(int)
+	if !ok {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintln(w, "Context value is incorrect")
+		return
+	}
+	updateTodo.UserId = userId
+	if err := json.NewDecoder(r.Body).Decode(&updateTodo); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintln(w, "Invalid JSON format")
+		return
+	}
+
+	if statusCode, err := tc.tu.UpdateTodo(updateTodo); err != nil {
+		w.WriteHeader(statusCode)
+		fmt.Fprintln(w, err)
+		return
 	}
 }
 
